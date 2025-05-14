@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Infraestructura básica con EC2 y S3 para Soluciones Tecnológicas del Futuro
+
+Resources:
+
+  MiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP and SSH traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  MiInstanciaEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0c2b8ca1dad447f8a  # Amazon Linux 2 en us-east-1
+      IamInstanceProfile: LabInstanceProfile
+      SecurityGroupIds:
+        - !Ref MiSecurityGroup
+      Tags:
+        - Key: Name
+          Value: InstanciaSoluciones
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y docker
+          service docker start
+          usermod -a -G docker ec2-user
+
+  MiBucketS3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub soluciones-futuro-${AWS::AccountId}
+
