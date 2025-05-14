@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo "Instalando dependencias"
+      - pip install -r app/requirements.txt
+
+  build:
+    commands:
+      - echo "Iniciando la aplicación Flask"
+      - python3 app/app.py &
+
+artifacts:
+  files:
+    - app/app.py
+    - app/requirements.txt
+    - buildspec.yml
+
